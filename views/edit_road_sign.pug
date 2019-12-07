@@ -1,0 +1,32 @@
+extends layout
+
+block content
+    h1 #{title}
+    form(method = 'POST', action = '/roadsign/edit/'+road_sign._id)
+        #form-group
+            label Sign Name:
+            input.form-control(name = 'sign_name', type = 'text', value= road_sign.sign_name)
+        #form-group
+            label Longitude:
+            input.form-control(name= 'long' ,type="text", value= road_sign.long)
+        #form-group
+            label Latitude
+            input.form-control(name= 'lat' ,type="text", value= road_sign.lat)
+        #form-group
+            label Heading
+            input.form-control(name= 'head' ,type="text", value= road_sign.head)
+        #form-group
+            label Road:
+            input.form-control(name= 'road' ,type="text", value= road_sign.road)
+        #form-group
+            label Area:
+            input.form-control(name= 'area' ,type="text", value= road_sign.area)
+        #form-group
+            label Area Code:
+            input.form-control(name= 'areaCode' ,type="text", value= road_sign.areaCode)
+        #form-group
+            label Image Code:
+            input.form-control(name= 'code' ,type="text", value= road_sign.code)
+        br
+        input.btn.btn-primary(type="submit", value = 'Submit')
+            

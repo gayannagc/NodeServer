@@ -1,0 +1,39 @@
+extends layout
+
+block content
+    .container
+        div.row
+            div.col-md-6.m-auto
+                h1.text-center.display-4.my-4 #{title}
+                form(action='/roadsign/add', method='POST' )
+                    .custom-file.mb-3
+                        #form-group
+                            label Sign Name:
+                            input.form-control(name = 'sign_name', type = 'text')
+                        #form-group
+                            label Longitude:
+                            input.form-control(name= 'long' ,type="text")
+                        #form-group
+                            label Latitude
+                            input.form-control(name= 'lat' ,type="text")
+                        #form-group
+                            label Heading
+                            input.form-control(name= 'head' ,type="text")
+                        #form-group
+                            label Road:
+                            input.form-control(name= 'road' ,type="text")
+                        #form-group
+                            label Area:
+                            input.form-control(name= 'area' ,type="text")
+                        #form-group
+                            label Area Code:
+                            input.form-control(name= 'areaCode' ,type="text")
+                        #form-group
+                            label image code:
+                            input.form-control(name= 'code' ,type="text")
+                    br
+                    input.btn.btn-primary.btn-block.my-4(type='submit', value='Submit')
+      
+                        
+                                
+                        

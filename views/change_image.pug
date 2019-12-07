@@ -1,0 +1,8 @@
+extends layout
+
+block content
+
+    .container
+        img(src="/roadsign/image/"+file.filename, alt="")
+        form(method="POST" action="/roadsign/change_image/" + file.filename + "?_method=DELETE")
+            button.btn.btn-danger.btn-block.mt-4 Delete

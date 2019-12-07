@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    h1 #{title}
+    ul.list-group
+        each sign,i in road_signs
+            li.list-group-item
+                a(href="/roadsign/"+sign._id) #{sign.sign_name}
+
+
+
+
+
+
