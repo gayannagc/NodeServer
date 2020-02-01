@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const multer = require('multer');
 const mongoose = require('mongoose');
 const config = require('../config/database')
+const csvtojson = require('csvtojson')
 
 mongoose.connect(config.database,{ useNewUrlParser: config.useNewUrlParser })
 conn = mongoose.connection;
@@ -30,16 +31,28 @@ conn.once('open', function(){
     gfs.collection('fs');
 });
 
-//create storge object
-const storage = new GridFsStorage({
-    url: config.database,
-    file: (req, file) => {
-      return {
-        filename: req.body.sign_name + req.body.long + req.body.lat + '.jpg' 
-      }
+// SET STORAGE
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now()+'.csv')
     }
-  });
-const upload = multer({ storage });
+  })
+   
+var upload = multer({ storage: storage })
+
+// create storge object
+// const storage = new GridFsStorage({
+//     url: config.database,
+//     file: (req, file) => {
+//       return {
+//         filename: req.body.sign_name + req.body.long + req.body.lat + '.jpg' 
+//       }
+//     }
+//   });
+// const upload = multer({ storage });
 
 
 //add road sign
@@ -50,14 +63,13 @@ router.get('/add',authCheck,function(req,res){
 });
 
 //add submit POST route
-router.post('/add' ,upload.single('file'), function(req,res){
+router.post('/add' ,authCheck, function(req,res){
     let signs = new rd_sign();
     signs.sign_name = req.body.sign_name;
     signs.long = req.body.long;
     signs.lat = req.body.lat;
     signs.head = req.body.head;
     signs.road = req.body.road;
-    signs.area = req.body.area;
     signs.areaCode = req.body.areaCode;
     signs.code = req.body.code;
 
@@ -98,15 +110,15 @@ router.delete('/change_image/:filename', function(req,res){
 
 //getting a single sign details
 router.get('/:id',authCheck, function(req,res){
-    rd_sign.findById(req.params.id, function(err,road_sign){
-        let file = {};
-        file.filename = road_sign.sign_name + road_sign.long + road_sign.lat + '.jpg'
-        res.render('road_sign',{
-            road_sign : road_sign,
-            file : file,
-        })
-    })   
-})
+     rd_sign.findById(req.params.id, function(err,road_sign){
+         let file = {};
+         file.filename = road_sign.sign_name + road_sign.long + road_sign.lat + '.jpg'
+         res.render('road_sign',{
+             road_sign : road_sign,
+             file : file,
+         })
+     })   
+ })
 
 router.get('/image/:filename',authCheck, function(req,res){
     gfs.files.findOne({filename: req.params.filename},function(err,file){
@@ -154,7 +166,6 @@ router.post('/edit/:id', function(req,res){
     signs.lat = req.body.lat;
     signs.head = req.body.head;
     signs.road = req.body.road;
-    signs.area = req.body.area;
     signs.areaCode = req.body.areaCode;
     signs.code = req.body.code;
 
@@ -199,6 +210,44 @@ router.get('/map/:area',authCheck, function(req,res){
             });
         }
     });
+})
+
+router.get('/upload/csv',authCheck, function(req,res){
+    res.render('csv_upload');
+})
+
+router.post('/upload/csv',authCheck, upload.single('myFile'), function(req,res){
+    const file = req.file
+    if(!file){
+        //req.flash('failureFlash', 'Upload a file');
+        res.redirect('/roadsign/upload/csv')
+    }else{
+        csvtojson().fromFile('./uploads/'+file.filename).then(source => {
+            source.forEach((entry) => {
+                let sign_data = new rd_sign();
+                sign_data.sign_name = entry.sign_name;
+                sign_data.long = entry.longitude;
+                sign_data.lat = entry.latitude;
+                sign_data.head = entry.heading;
+                sign_data.code = entry.image_code;
+                sign_data.road = "none";
+                sign_data.areaCode = "none"
+                console.log(sign_data)
+                sign_data.save((err) => {
+                    if(err){
+                        console.log('error')
+                        res.redirect('/roadsign/upload/csv')
+                    }
+                    else{
+                        req.flash('success', 'Data Saved');
+                        res.redirect('/')
+                    }
+                    
+                })
+            })
+        })
+    }
+    
 })
 
 module.exports = router;

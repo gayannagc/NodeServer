@@ -22,10 +22,6 @@ let rdsignSchema = mongoose.Schema({
         type : String,
         required : true
     },
-    area : {
-        type : String,
-        required : true
-    },
     areaCode : {
         type : String,
         required : true

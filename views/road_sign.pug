@@ -20,14 +20,11 @@ block content
                     td Road
                     td #{road_sign.road}
                 tr
-                    td Area
-                    td #{road_sign.area}
-                tr
                     td Area Code
                     td #{road_sign.areaCode}
                 tr
                     td Image Code
-                        td #{road_sign.code}
+                    td #{road_sign.code}
             div(class="div-a")
                 a.rd_sign-1.btn.btn-info.btn-lg.mx-1(href = '/roadsign/edit/'+road_sign._id) Edit
                 a.rd_sign-2.btn.btn-danger.btn-lg.delete-sign.mx-1(href="#",sign-id = road_sign._id) Delete
