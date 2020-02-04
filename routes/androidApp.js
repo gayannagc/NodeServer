@@ -4,6 +4,7 @@ const rd_sign = require('../models/road_sign')
 const multer = require('multer');
 const mongoose = require('mongoose');
 const config = require('../config/database')
+const categorization = require('../config/categorization')
 
 router.get('/locations/:code', function(req,res){
     var query = {areaCode : req.params.code}
@@ -32,6 +33,7 @@ router.get('/locations/:code', function(req,res){
 })
 
 router.post('/upload/locations', function(req,res){
+    console.log("reached")
     let signs = new rd_sign();
     signs.sign_name = req.body.sign_name;
     signs.long = req.body.longitude;

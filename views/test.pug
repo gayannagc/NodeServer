@@ -1,0 +1,106 @@
+doctype html
+head
+    title Active-Road-Sign
+    link(rel="stylesheet", href="/bower_components/bootstrap/dist/css/bootstrap.css")
+    link(rel="stylesheet", href="/css/style.css")
+     
+nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+    .container
+        .navbar-header
+            button.navbar-toggler.collapsed.mx-3(type='button', data-toggle='collapse', data-target='#navbarTogglerDemo03', aria-controls='navbarTogglerDemo03', aria-expanded='false', aria-label='Toggle navigation')
+                span.navbar-toggler-icon
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+            a.navbar-brand(href='/') Active-Road-Sign
+        #navbarTogglerDemo03.collapse.navbar-collapse  
+            ul.nav.navbar-nav
+                li.active
+                    a.nav-link(href='/') Home     
+                li
+                    a.nav-link(href='/roadsign/add') Add-Sign
+                li
+                    a.nav-link(href='/roadsign/map/home') View-Map
+                li
+                    a.nav-link(href='/roadsign/upload/csv') CSV-Upload
+            ul.nav.navbar-nav.ml-auto
+                if user
+                    li 
+                        a.nav-link(href='/users/logout') Logout
+                else
+                    li(style='float:right')
+                        a.nav-link(href="/users/register") Register
+                        
+                    li(style='float:right')
+                        a.nav-link(href="/users/login") Login  
+#map-new 
+    script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAtpbrLcoI0i0-yuXVImpDqDoRd32-NTfo&callback=initMap')  
+    script(type='text/javascript').
+        var map = new google.maps.Map(
+        document.getElementById('map-new'), {
+            zoom: 10, 
+            center:new google.maps.LatLng(-33.92, 151.25),
+            });
+
+        var infowindow = new google.maps.InfoWindow();
+
+        var locations = [
+                          ['Bondi Beach', -33.890542, 152.274856, 4],
+                          ['Coogee Beach', -33.923036, 151.259052, 5],
+                          ['Cronulla Beach', -34.028249, 151.157507, 3],
+                          ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
+                          ['Maroubra Beach', -33.950198, 151.259302, 1]
+                        ];
+
+        function newFunc(sign,map){
+          return new google.maps.Marker({
+            position : new google.maps.LatLng(sign.lat,sign.long),
+            map : map
+          });
+        }
+
+        
+        locations.forEach(async sign => {
+          marker = await newFunc(sign,map)
+          google.maps.event.addListener(marker, 'click', (function(marker){
+            return function(){
+              infowindow.open(map,marker)
+            }
+          })(marker));
+        })
+        
+        
+
+        //- var map = new google.maps.Map(
+        //- document.getElementById('map-new'), {
+        //-     zoom: 10, 
+        //-     center:new google.maps.LatLng(-33.92, 151.25),
+        //-     });
+        //- var infowindow = new google.maps.InfoWindow();
+        
+        //- var marker, i;
+
+        //- for (i = 0; i < #{locations.length}; i++) {
+        //-     marker = new google.maps.Marker({
+        //-         position: new google.maps.LatLng(locations[i][1], locations[i][2]), 
+        //-         map: map
+        //-     });
+        //-     google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        //-         return function() {
+        //-             infowindow.setContent(locations[i][0]);
+        //-             infowindow.open(map, marker);
+        //-         }
+        //-     })(marker, i));
+        //- }
+.container
+    != messages('message',locals)
+    block content
+    br
+    hr
+    footer
+        p Copyright &copy; 2019
+script(src='/bower_components/jquery/dist/jquery.js')
+script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
+script(src='/js/main.js')
+
+        

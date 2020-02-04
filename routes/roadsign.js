@@ -8,6 +8,7 @@ const multer = require('multer');
 const mongoose = require('mongoose');
 const config = require('../config/database')
 const csvtojson = require('csvtojson')
+const categorization = require('../config/categorization')
 
 mongoose.connect(config.database,{ useNewUrlParser: config.useNewUrlParser })
 conn = mongoose.connection;
@@ -53,7 +54,16 @@ var upload = multer({ storage: storage })
 //     }
 //   });
 // const upload = multer({ storage });
-
+router.get('/test', function(req,res){
+    res.render('test',{
+            locations : [['Bondi Beach', -33.890542, 151.274856, 4],
+                         ['Coogee Beach', -33.923036, 151.259052, 5],
+                         ['Cronulla Beach', -34.028249, 151.157507, 3],
+                         ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
+                         ['Maroubra Beach', -33.950198, 151.259302, 1]
+                        ]
+    })
+})
 
 //add road sign
 router.get('/add',authCheck,function(req,res){
@@ -112,7 +122,7 @@ router.delete('/change_image/:filename', function(req,res){
 router.get('/:id',authCheck, function(req,res){
      rd_sign.findById(req.params.id, function(err,road_sign){
          let file = {};
-         file.filename = road_sign.sign_name + road_sign.long + road_sign.lat + '.jpg'
+         file.filename = road_sign.sign_name + road_sign.long + road_sign.lat + '.jpg';
          res.render('road_sign',{
              road_sign : road_sign,
              file : file,
@@ -195,12 +205,37 @@ router.delete('/:id', function(req,res){
 });
 
 router.get('/map/home',authCheck, function(req,res){
-    res.render('sign_map');
+    var locations = [];
+    function dataObj(lat,long){
+        return [lat,long];
+    }
+
+    rd_sign.find({},async function(err,road_signs){
+        if(err){
+            console.log('querry error: ',err);
+        }else{
+            for(var i=0; i < road_signs.length; i++){
+                locations[i] = await dataObj(road_signs[i].lat, road_signs[i].long)
+            }  
+            res.render('sign_map',{
+                title : 'Road Signs',
+                road_signs : road_signs,
+                locations : [['Bondi Beach', -33.890542, 151.274856, 4],
+                             ['Coogee Beach', -33.923036, 151.259052, 5],
+                             ['Cronulla Beach', -34.028249, 151.157507, 3],
+                             ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
+                             ['Maroubra Beach', -33.950198, 151.259302, 1]
+                            ]
+            });
+        }
+    });
 })
+
+
 
 router.get('/map/:area',authCheck, function(req,res){
     let query = {area : req.params.area}
-    rd_sign.find(query, function(err,road_signs){
+    rd_sign.find(query, async function(err,road_signs){
         if(err){
             console.log('query error: ',err);
         }else{
@@ -231,7 +266,7 @@ router.post('/upload/csv',authCheck, upload.single('myFile'), function(req,res){
                 sign_data.head = entry.heading;
                 sign_data.code = entry.image_code;
                 sign_data.road = "none";
-                sign_data.areaCode = "none"
+                sign_data.areaCode = categorization(req.body.latitude,req.body.longitude);
                 console.log(sign_data)
                 sign_data.save((err) => {
                     if(err){
@@ -249,5 +284,25 @@ router.post('/upload/csv',authCheck, upload.single('myFile'), function(req,res){
     }
     
 })
+var locations = [];
+function dataObj(lat,long){
+    return [lat,long];
+}
+
+function getData(){
+    rd_sign.find({}, async function(err,road_signs){
+        if(err){
+            console.log('querry error: ',err);
+        }else{
+            for(var i=0; i < road_signs.length; i++){
+                locations[i] = await dataObj(road_signs[i].lat, road_signs[i].long)
+            }    
+        }
+        console.log(locations)    
+    });
+    
+} 
+
+//getData()
 
 module.exports = router;

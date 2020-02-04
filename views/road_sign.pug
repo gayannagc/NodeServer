@@ -1,36 +1,91 @@
-extends layout
+doctype html
+head
+    title Active-Road-Sign
+    link(rel="stylesheet", href="/bower_components/bootstrap/dist/css/bootstrap.css")
+    link(rel="stylesheet", href="/css/style.css")   
+nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+    .container
+        .navbar-header
+            button.navbar-toggler.collapsed.mx-3(type='button', data-toggle='collapse', data-target='#navbarTogglerDemo03', aria-controls='navbarTogglerDemo03', aria-expanded='false', aria-label='Toggle navigation')
+                span.navbar-toggler-icon
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+            a.navbar-brand(href='/') Active-Road-Sign
+        #navbarTogglerDemo03.collapse.navbar-collapse  
+            ul.nav.navbar-nav
+                li.active
+                    a.nav-link(href='/') Home     
+                li
+                    a.nav-link(href='/roadsign/add') Add-Sign
+                li
+                    a.nav-link(href='/roadsign/map/home') View-Map
+                li
+                    a.nav-link(href='/roadsign/upload/csv') CSV-Upload
+            ul.nav.navbar-nav.ml-auto
+                if user
+                    li 
+                        a.nav-link(href='/users/logout') Logout
+                else
+                    li(style='float:right')
+                        a.nav-link(href="/users/register") Register
+                        
+                    li(style='float:right')
+                        a.nav-link(href="/users/login") Login
+.sign-details
+    h2.my-2 #{road_sign.sign_name}
+        table(align="center")
+            tr
+                th Parameter
+                th Value
+            tr
+                td Longitude
+                td #{road_sign.long}
+            tr
+                td Latitude
+                td #{road_sign.lat}
+            tr 
+                td Heading
+                td #{road_sign.head}
+            tr
+                td Road
+                td #{road_sign.road}
+            tr
+                td Area Code
+                td #{road_sign.areaCode}
+            tr
+                td Image Code
+                td #{road_sign.code}  
+div(class="div-a")
+    a.rd_sign-1.btn.btn-info.btn-lg.mx-1(href = '/roadsign/edit/'+road_sign._id) Edit
+    a.rd_sign-2.btn.btn-danger.btn-lg.delete-sign.mx-1(href="#",sign-id = road_sign._id) Delete       
 
-block content
-       
-            h2.my-2 #{road_sign.sign_name}
-            table(align="center")
-                tr
-                    th Parameter
-                    th Value
-                tr
-                    td Longitude
-                    td #{road_sign.long}
-                tr
-                    td Latitude
-                    td #{road_sign.lat}
-                tr 
-                    td Heading
-                    td #{road_sign.head}
-                tr
-                    td Road
-                    td #{road_sign.road}
-                tr
-                    td Area Code
-                    td #{road_sign.areaCode}
-                tr
-                    td Image Code
-                    td #{road_sign.code}
-            div(class="div-a")
-                a.rd_sign-1.btn.btn-info.btn-lg.mx-1(href = '/roadsign/edit/'+road_sign._id) Edit
-                a.rd_sign-2.btn.btn-danger.btn-lg.delete-sign.mx-1(href="#",sign-id = road_sign._id) Delete
-    
-                    
-  
-  
+#map
+script.
+    // Initialize and add the map
+    function initMap() {
+    // The location of Uluru
+    var uluru = {lat: #{road_sign.lat}, lng: #{road_sign.long}};
+    // The map, centered at Uluru
+    var map = new google.maps.Map(
+    document.getElementById('map'), {zoom: 18, center: uluru});
+    // The marker, positioned at Uluru
+    var marker = new google.maps.Marker({position: uluru, map: map});
+    }
 
-    
+//-   * Load the API from the specified URL
+//-   * The async attribute allows the browser to render the page while the API loads
+//-   * The key parameter will contain your own API key (which is not needed for this tutorial)
+//-   * The callback parameter executes the initMap() function
+script(async='' defer='' src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAtpbrLcoI0i0-yuXVImpDqDoRd32-NTfo&callback=initMap')
+
+.container
+    != messages('message',locals)
+    block content
+    br
+    hr
+    footer
+        p Copyright &copy; 2019
+script(src='/bower_components/jquery/dist/jquery.js')
+script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
+script(src='/js/main.js')

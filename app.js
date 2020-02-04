@@ -100,7 +100,7 @@ app.get('/',  function(req,res){
         }else{
             res.render('index',{
                 title : 'Road Signs',
-                road_signs : road_signs
+                road_signs : road_signs,
             });
         }
     });
