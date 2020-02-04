@@ -118,7 +118,7 @@ let androidApp = require('./routes/androidApp')
 app.use('/androidApp',androidApp)
 
 //starting the server
-app.listen(3000, function(err){
+app.listen(80, function(err){
     if(err){
         console.log('Server interrupted',err);
     }else{
